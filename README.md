@@ -25,7 +25,7 @@
 - auth path: `kubernetes`
 - role: `superset`
 
-Это видно в [superset/values.yaml](/Users/semen/k8s/superset/values.yaml:72) и [superset/values.yaml](/Users/semen/k8s/superset/values.yaml:345).
+Это видно в [superset/values.yaml](https://github.com/SamRozhkov/hashicorp_vault_superset/blob/main/superset/values.yaml).
 
 ## Что выполнить в Vault
 
@@ -115,7 +115,7 @@ vault kv get secret/superset
 
 ## Как Superset читает этот секрет
 
-В [superset/values.yaml](/Users/semen/k8s/superset/values.yaml:72) указано:
+В [superset/values.yaml](https://github.com/SamRozhkov/hashicorp_vault_superset/blob/main/superset/values.yaml) указано:
 
 ```yaml
 extraEnv:
@@ -128,7 +128,7 @@ extraEnv:
 - берет поле `secret_key`
 - подставляет его в env переменную `SECRET_KEY`
 
-В [superset/values.yaml](/Users/semen/k8s/superset/values.yaml:149) приложение уже читает значение из runtime env:
+В [superset/values.yaml](https://github.com/SamRozhkov/hashicorp_vault_superset/blob/main/superset/values.yaml) приложение уже читает значение из runtime env:
 
 ```python
 SECRET_KEY = os.getenv("SECRET_KEY")
