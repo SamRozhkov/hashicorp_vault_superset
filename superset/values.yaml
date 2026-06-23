@@ -208,7 +208,7 @@ configMountPath: "/app/pythonpath"
 extraConfigMountPath: "/app/configs"
 
 image:
-  repository: apachesuperset.docker.scarf.sh/apache/superset
+  repository: apache/superset:0.17.0
   tag: ~
   pullPolicy: IfNotPresent
 
