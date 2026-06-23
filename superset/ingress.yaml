@@ -12,7 +12,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: superset.local
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -21,4 +22,3 @@ spec:
             name: superset
             port:
               number: 8088
-
