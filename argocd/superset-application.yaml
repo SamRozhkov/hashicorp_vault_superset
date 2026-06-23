@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: superset
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: superset
+  sources:
+    - repoURL: https://apache.github.io/superset
+      chart: superset
+      targetRevision: 0.15.5
+      helm:
+        valueFiles:
+          - $values/superset/values.yaml
+    - repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
+      targetRevision: main
+      path: superset
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
