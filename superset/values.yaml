@@ -153,6 +153,16 @@ configOverrides:
     SECRET_KEY = os.getenv("SECRET_KEY")
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY env var is not set")
+  language: |
+    LANGUAGES = {
+      "en": {"flag": "us", "name": "English"},
+      "ru": {"flag": "ru", "name": "Russian"},
+    }   
+  feature_flag: |
+    FEATURE_FLAGS: {
+      "DASHBOARD_RBAC": True,
+      "SQLLAB_FORCE_RUN_ASYNC": True,
+    }
   # extend_timeout: |
   #    # Extend timeout to allow long running queries.
   #    SUPERSET_WEBSERVER_TIMEOUT = ...
