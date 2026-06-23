@@ -2151,9 +2151,9 @@ createUserJob:
 
   # In case you need to disable the helm hooks that create the jobs after install.
   # Disable this if you are e.g. using ArgoCD
-  useHelmHooks: true
+  useHelmHooks: false
 
-  applyCustomEnv: true
+  applyCustomEnv: false
 
   env: []
 
@@ -2188,7 +2188,8 @@ migrateDatabaseJob:
   annotations: {}
 
   # `jobAnnotations` are annotations on the database migration job
-  jobAnnotations: {}
+  jobAnnotations:
+    argocd.argoproj.io/hook: Sync
 
   restartPolicy: OnFailure
 
@@ -2263,9 +2264,9 @@ migrateDatabaseJob:
 
   # In case you need to disable the helm hooks that create the jobs after install.
   # Disable this if you are using ArgoCD for example
-  useHelmHooks: true
+  useHelmHooks: false
 
-  applyCustomEnv: true
+  applyCustomEnv: false
   env: []
 
 apiServer:
@@ -4518,4 +4519,3 @@ logs:
 
     # The subpath of the existing PVC to use
     subPath:
-
