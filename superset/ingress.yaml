@@ -11,6 +11,10 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+      - superset.local
+      secretName: superset-local-tls
   rules:
   - host: superset.local
     http:

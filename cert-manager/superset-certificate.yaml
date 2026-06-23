@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: superset-local-cert
+  namespace: superset
+spec:
+  secretName: superset-local-tls
+  dnsNames:
+    - superset.local
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
