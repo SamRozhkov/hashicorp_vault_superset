@@ -9,12 +9,12 @@ spec:
     namespace: airflow
     server: https://kubernetes.default.svc
   sources:
-    - repoURL: https://github.com/apache/airflow.git
-      targetRevision: 1.22.0 
-      directory:
-        jsonnet:
-          extVars: []
-        recurse: false
+    - repoURL: https://airflow.apache.org
+      chart: airflow
+      targetRevision: 1.22.0
+      helm:
+        valueFiles:
+          - $values/airflow/values.yaml
     - repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
       targetRevision: main
       path: airflow
@@ -26,4 +26,3 @@ spec:
       enabled: true
     syncOptions:
       - CreateNamespace=true
-
