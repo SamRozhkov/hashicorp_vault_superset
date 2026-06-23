@@ -156,10 +156,13 @@ ingress:
   # Configs for the Ingress of the API Server (Airflow 3+)
   apiServer:
     # Enable API Server ingress resource
-    enabled: false
+    enabled: true
 
     # Annotations for the API Server Ingress
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 
     # The path for the API Server Ingress
     path: "/"
@@ -171,7 +174,8 @@ ingress:
     host: ""
 
     # The hostnames or hosts configuration for the API Server Ingress (templated)
-    hosts: []
+    hosts:
+      - name: "airflow.local"
     # - name: ""
     #   # configs for API Server Ingress TLS
     #   tls:
@@ -181,7 +185,7 @@ ingress:
     #     secretName: ""
 
     # The Ingress Class for the API Server Ingress
-    ingressClassName: ""
+    ingressClassName: "nginx"
 
     # Configs for API Server Ingress TLS (deprecated, use `ingress.apiServer.hosts[*].tls` instead)
     tls:
