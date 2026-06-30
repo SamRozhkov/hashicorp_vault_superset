@@ -1,0 +1,65 @@
+# ArgoCD Application for Loki (log aggregation)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: loki-stack
+    targetRevision: "2.9.3"
+    helm:
+      releaseName: loki
+      values: |
+        loki:
+          persistence:
+            enabled: true
+            size: 30Gi
+          config:
+            auth_enabled: false
+            ingester:
+              max_chunk_age: 1h
+              lifecycler:
+                ring:
+                  replication_factor: 1
+            limits_config:
+              enforce_metric_name: false
+              reject_old_samples: true
+              reject_old_samples_max_age: 168h
+
+        promtail:
+          enabled: true
+          config:
+            clients:
+              - url: http://loki:3100/loki/api/v1/push
+            scrape_configs:
+              - job_name: kubernetes-pods
+                kubernetes_sd_configs:
+                  - role: pod
+                relabel_configs:
+                  - source_labels: [__meta_kubernetes_pod_namespace]
+                    action: replace
+                    target_label: namespace
+                  - source_labels: [__meta_kubernetes_pod_name]
+                    action: replace
+                    target_label: pod
+                  - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name]
+                    action: replace
+                    separator: "/"
+                    target_label: job
+
+        grafana:
+          enabled: false  # Using Grafana from prometheus-stack
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

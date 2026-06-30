@@ -1,0 +1,116 @@
+# PrometheusRule for critical alerts
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kubernetes-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: kubernetes.rules
+      interval: 30s
+      rules:
+        # Node alerts
+        - alert: NodeNotReady
+          expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.node }} is not ready"
+            description: "Node {{ $labels.node }} has been unready for more than 5 minutes."
+
+        - alert: NodeMemoryPressure
+          expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.node }} has MemoryPressure"
+            description: "Node {{ $labels.node }} has MemoryPressure condition."
+
+        - alert: NodeDiskPressure
+          expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.node }} has DiskPressure"
+            description: "Node {{ $labels.node }} has DiskPressure condition."
+
+        # Pod alerts
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total[15m]) > 0.1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+            description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has restarted {{ $value }} times in last 15 minutes."
+
+        - alert: PodNotHealthy
+          expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[15m:1m]) > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is not healthy"
+            description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-running state for longer than 15 minutes."
+
+        # Deployment alerts
+        - alert: DeploymentReplicasMismatch
+          expr: kube_deployment_spec_replicas{job="kube-state-metrics"} != kube_deployment_status_replicas_available{job="kube-state-metrics"}
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} replicas mismatch"
+            description: "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has not matched the expected number of replicas for longer than 10 minutes."
+
+        # Volume alerts
+        - alert: PersistentVolumeFull
+          expr: kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.9
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} is almost full"
+            description: "PersistentVolume {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is {{ $value | humanizePercentage }} full."
+
+        # Vault alerts
+        - alert: VaultSealed
+          expr: vault_core_unsealed == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Vault is sealed"
+            description: "Vault instance has been sealed for more than 1 minute."
+
+        - alert: VaultHighAuthFailures
+          expr: rate(vault_core_handle_login_request{error="true"}[5m]) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Vault has high authentication failures"
+            description: "Vault authentication failure rate is {{ $value }} per second."
+
+        # Prometheus alerts
+        - alert: PrometheusConfigReloadFailed
+          expr: prometheus_config_last_reload_successful == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Prometheus config reload failed"
+            description: "Prometheus configuration reload has failed."
+
+        # API Server alerts
+        - alert: KubernetesAPIServerLatency
+          expr: histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket[5m])) by (verb, le)) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Kubernetes API server high latency"
+            description: "Kubernetes API server 99th percentile latency is {{ $value }}s for {{ $labels.verb }}."

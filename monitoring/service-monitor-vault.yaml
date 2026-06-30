@@ -1,0 +1,48 @@
+# ServiceMonitor for Vault metrics collection
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vault
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vault
+  endpoints:
+    - port: metrics
+      path: /v1/sys/metrics
+      params:
+        format: ['prometheus']
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+      interval: 30s
+---
+# ServiceMonitor for Airflow metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: airflow
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: airflow
+  endpoints:
+    - port: metrics
+      interval: 30s
+---
+# ServiceMonitor for Superset metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: superset
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: superset
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

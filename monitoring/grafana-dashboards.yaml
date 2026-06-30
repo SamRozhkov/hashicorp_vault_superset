@@ -1,0 +1,85 @@
+# Grafana dashboard ConfigMap for Kubernetes cluster overview
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-kubernetes-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  kubernetes-cluster.json: |
+    {
+      "dashboard": {
+        "title": "Kubernetes Cluster Overview",
+        "panels": [
+          {
+            "title": "Cluster CPU Usage",
+            "targets": [
+              {
+                "expr": "sum(rate(container_cpu_usage_seconds_total[5m])) by (namespace)",
+                "legendFormat": "{{ namespace }}"
+              }
+            ]
+          },
+          {
+            "title": "Memory Usage",
+            "targets": [
+              {
+                "expr": "sum(container_memory_usage_bytes) by (namespace)",
+                "legendFormat": "{{ namespace }}"
+              }
+            ]
+          },
+          {
+            "title": "Pod Count",
+            "targets": [
+              {
+                "expr": "sum(kube_pod_info) by (namespace)",
+                "legendFormat": "{{ namespace }}"
+              }
+            ]
+          },
+          {
+            "title": "Node Status",
+            "targets": [
+              {
+                "expr": "kube_node_status_condition{condition=\"Ready\",status=\"true\"}",
+                "legendFormat": "{{ node }}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  vault-monitoring.json: |
+    {
+      "dashboard": {
+        "title": "Vault Monitoring",
+        "panels": [
+          {
+            "title": "Vault Sealed Status",
+            "targets": [
+              {
+                "expr": "vault_core_unsealed"
+              }
+            ]
+          },
+          {
+            "title": "Auth Failures",
+            "targets": [
+              {
+                "expr": "rate(vault_core_handle_login_request{error=\"true\"}[5m])"
+              }
+            ]
+          },
+          {
+            "title": "Token Lookups",
+            "targets": [
+              {
+                "expr": "rate(vault_core_handle_request{operation=\"lookup\"}[5m])"
+              }
+            ]
+          }
+        ]
+      }
+    }

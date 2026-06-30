@@ -1,0 +1,14 @@
+# Production cert-manager Certificate for Kubernetes Dashboard.
+# Replace dashboard.example.com with your real Dashboard hostname.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kubernetes-dashboard-tls
+  namespace: kubernetes-dashboard
+spec:
+  secretName: kubernetes-dashboard-tls
+  dnsNames:
+    - dashboard.example.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
