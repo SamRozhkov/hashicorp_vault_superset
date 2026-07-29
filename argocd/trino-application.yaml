@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trino
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: trino
+  sources:
+    - repoURL: https://trinodb.github.io/charts
+      chart: trino
+      targetRevision: 1.42.2
+      helm:
+        valueFiles:
+          - $values/trino/values.yaml
+    #- repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
+    #  targetRevision: main
+    #  path: superset
+    #  ref: values
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
