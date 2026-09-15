@@ -1,0 +1,24 @@
+# Standalone bitnami/postgresql release used as OpenMetadata's main
+# metadata store (see openmetadata.config.database in values.yaml).
+# Bitnami stopped shipping free-tier images on the "latest" tags in 2025;
+# pin to the bitnamilegacy image, same as the bundled postgresql subchart
+# already used by ../airflow/values.yaml, to avoid broken pulls.
+# Airflow's own metadata DB (for ingestion pipelines) uses the separate
+# bundled postgresql inside the openmetadata-dependencies chart, not this one.
+fullnameOverride: "postgresql"
+
+image:
+  repository: bitnamilegacy/postgresql
+  tag: "16.1.0-debian-11-r15"
+
+auth:
+  enablePostgresUser: true
+  postgresPassword: postgres    # to be provided by CI/CD
+  username: openmetadata_user
+  password: openmetadata_password    # to be provided by CI/CD
+  database: openmetadata_db
+
+primary:
+  persistence:
+    enabled: true
+    size: 20Gi

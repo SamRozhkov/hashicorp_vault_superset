@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openmetadata
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: openmetadata
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql
+      targetRevision: 17.1.2
+      helm:
+        releaseName: postgresql
+        valueFiles:
+          - $values/openmetadata/postgresql-values.yaml
+    - repoURL: https://helm.open-metadata.org/
+      chart: openmetadata-dependencies
+      targetRevision: 1.13.6
+      helm:
+        releaseName: openmetadata-dependencies
+        valueFiles:
+          - $values/openmetadata/dependencies-values.yaml
+    - repoURL: https://helm.open-metadata.org/
+      chart: openmetadata
+      targetRevision: 1.13.6
+      helm:
+        releaseName: openmetadata
+        valueFiles:
+          - $values/openmetadata/values.yaml
+    - repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
