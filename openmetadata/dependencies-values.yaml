@@ -215,12 +215,15 @@ airflow:
       enabled: true
       storageClassName: ""
       size: 1Gi
-  # Logs persistence configuration
+  # Logs persistence configuration.
+  # Disabled: the chart's logs PVC defaults to ReadWriteMany, shared across
+  # the api-server, scheduler and triggerer pods at once. The default
+  # "standard"/local-path storage class only supports ReadWriteOnce, so an
+  # RWX claim stays Pending forever ("NodePath only supports ReadWriteOnce
+  # and ReadWriteOncePod"). Falls back to emptyDir per pod instead.
   logs:
     persistence:
-      enabled: true
-      storageClassName: ""
-      size: 1Gi
+      enabled: false
 # Apache Jena Fuseki SPARQL server for the OpenMetadata RDF / Knowledge Graph feature.
 # Disabled by default. When enabled it deploys an in-cluster Fuseki (Deployment +
 # Service "fuseki" on port 3030 + optional PVC). Point OpenMetadata at it by setting
