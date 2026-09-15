@@ -157,6 +157,15 @@ airflow:
     # Amount of scheduler replicas (recommended to be set larger than 2 with MYSQL 8+ and Postgres 12+)
     replicas: 1
 
+    # Default failureThreshold(6) * periodSeconds(10) only gives the
+    # container 60s to bind its health port before kubelet kills it as a
+    # failed startup. On a resource-shared local cluster (docker-desktop
+    # running opensearch + 2 postgres + airflow components at once) that's
+    # not always enough, causing an endless Init:CrashLoopBackOff. Give it
+    # up to 5 minutes instead.
+    startupProbe:
+      failureThreshold: 30
+
   # API server needs access to DAGs volume for OpenMetadata dynamic DAG generation
   apiServer:
     enabled: true
@@ -164,6 +173,10 @@ airflow:
     # Number of Airflow API servers in the deployment.
     # Omitted from the Deployment, when HPA is enabled.
     replicas: 1
+
+    # See the comment on scheduler.startupProbe above - same reasoning.
+    startupProbe:
+      failureThreshold: 30
 
     extraVolumes:
       - name: dags
@@ -178,6 +191,9 @@ airflow:
     enabled: true
     # Number of airflow triggerers in the deployment
     replicas: 1
+    # No startupProbe override here: this chart's values schema only allows
+    # livenessProbe for triggerer, and in practice it hasn't hit the same
+    # slow-start timeout as scheduler/apiServer.
 
   # Airflow Dag Processor Config
   dagProcessor:
