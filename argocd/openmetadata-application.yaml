@@ -9,9 +9,12 @@ spec:
     namespace: openmetadata
     server: https://kubernetes.default.svc
   sources:
-    - repoURL: https://charts.bitnami.com/bitnami
+    # charts.bitnami.com stopped serving index.yaml (403) after Bitnami's
+    # 2025 move to OCI-only distribution; pull the chart from Docker Hub's
+    # OCI registry instead.
+    - repoURL: registry-1.docker.io/bitnamicharts
       chart: postgresql
-      targetRevision: 17.1.2
+      targetRevision: 18.11.3
       helm:
         releaseName: postgresql
         valueFiles:
