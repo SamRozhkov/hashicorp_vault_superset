@@ -114,6 +114,13 @@ airflow:
   createUserJob:
     # Whether the create user job should be created
     enabled: true
+    # Render as a plain Job instead of a post-install/post-upgrade Helm hook.
+    # With ArgoCD, hook Jobs only run after every other resource in the sync
+    # is Healthy - but the scheduler/api-server/triggerer pods can never
+    # become healthy without this job (and migrateDatabaseJob below) having
+    # already run, so the default hook wiring deadlocks. The chart's own
+    # values.yaml calls this out: "Disable this if you are using ArgoCD".
+    useHelmHooks: false
     # The default user to create
     defaultUser:
       role: Admin
@@ -126,6 +133,8 @@ airflow:
   # Airflow database migration job settings
   migrateDatabaseJob:
     enabled: true
+    # See the comment on createUserJob.useHelmHooks above - same deadlock.
+    useHelmHooks: false
 
   # Worker configuration for KubernetesExecutor (from 1.19.0 let's use workers.kubernetes)
   # Set replicas to 0 for LocalExecutor (local development)
