@@ -12,13 +12,6 @@ spec:
     - repoURL: https://trinodb.github.io/charts
       chart: trino
       targetRevision: 1.42.2
-      helm:
-        valueFiles:
-          - $values/trino/values.yaml
-    #- repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
-    #  targetRevision: main
-    #  path: superset
-    #  ref: values
   syncPolicy:
     automated:
       prune: true
