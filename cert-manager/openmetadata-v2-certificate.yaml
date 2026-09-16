@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openmetadata-v2-local-cert
+  namespace: openmetadata-v2
+spec:
+  secretName: openmetadata-v2-local-tls
+  dnsNames:
+    - openmetadata-v2.local
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer

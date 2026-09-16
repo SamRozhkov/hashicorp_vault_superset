@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openmetadata-v2
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: openmetadata-v2
+    server: https://kubernetes.default.svc
+  sources:
+    # charts.bitnami.com stopped serving index.yaml (403) after Bitnami's
+    # 2025 move to OCI-only chart distribution; pull the chart from Docker
+    # Hub's OCI registry instead.
+    - repoURL: registry-1.docker.io/bitnamicharts
+      chart: postgresql
+      targetRevision: 18.11.3
+      helm:
+        releaseName: postgresql
+        valueFiles:
+          - $values/openmetadata-v2/postgresql-values.yaml
+    - repoURL: https://helm.open-metadata.org/
+      chart: openmetadata-dependencies
+      targetRevision: 2.0.1
+      helm:
+        releaseName: openmetadata-dependencies
+        valueFiles:
+          - $values/openmetadata-v2/dependencies-values.yaml
+    - repoURL: https://helm.open-metadata.org/
+      chart: openmetadata
+      targetRevision: 2.0.1
+      helm:
+        releaseName: openmetadata
+        valueFiles:
+          - $values/openmetadata-v2/values.yaml
+    - repoURL: https://github.com/SamRozhkov/hashicorp_vault_superset.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
