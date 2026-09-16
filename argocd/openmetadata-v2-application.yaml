@@ -21,14 +21,14 @@ spec:
           - $values/openmetadata-v2/postgresql-values.yaml
     - repoURL: https://helm.open-metadata.org/
       chart: openmetadata-dependencies
-      targetRevision: 2.0.1
+      targetRevision: 2.0.0
       helm:
         releaseName: openmetadata-dependencies
         valueFiles:
           - $values/openmetadata-v2/dependencies-values.yaml
     - repoURL: https://helm.open-metadata.org/
       chart: openmetadata
-      targetRevision: 2.0.1
+      targetRevision: 2.0.0
       helm:
         releaseName: openmetadata
         valueFiles:
