@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - openmetadata.local
+      - openmetadata.rozhkov.pro
       secretName: openmetadata-local-tls
   rules:
-  - host: openmetadata.local
+  - host: openmetadata.rozhkov.pro
     http:
       paths:
       - path: /

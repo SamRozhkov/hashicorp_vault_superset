@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: openmetadata-local-tls
   dnsNames:
-    - openmetadata.local
+    - openmetadata.rozhkov.pro
   issuerRef:
     name: selfsigned
     kind: ClusterIssuer
