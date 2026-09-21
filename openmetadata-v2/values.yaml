@@ -425,7 +425,7 @@ openmetadata:
       enabled: true
       baseUri: "https://openmetadata2.rozhkov.pro/"
       storageType: "FUSEKI"
-      remoteEndpoint: "hhttp://fuseki:3030/openmetadata"
+      remoteEndpoint: "http://fuseki:3030/openmetadata"
       username: "admin"
       password:
         secretRef: fuseki-admin-credentials
