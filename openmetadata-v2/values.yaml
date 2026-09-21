@@ -422,14 +422,14 @@ openmetadata:
       cacheControl: ""
       pragma: ""
     rdf:
-      enabled: false
-      baseUri: "https://open-metadata.org/"
+      enabled: true
+      baseUri: "https://openmetadata2.rozhkov.pro/"
       storageType: "FUSEKI"
-      remoteEndpoint: "http://localhost:3030/openmetadata"
-      username: ""
+      remoteEndpoint: "hhttp://fuseki:3030/openmetadata"
+      username: "admin"
       password:
-        secretRef: ""
-        secretKey: ""
+        secretRef: fuseki-admin-credentials
+        secretKey: admin-password
       dataset: "openmetadata"
 
 networkPolicy:
