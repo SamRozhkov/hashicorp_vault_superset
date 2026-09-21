@@ -266,7 +266,7 @@ airflow:
 #   kubectl create secret generic fuseki-admin-credentials \
 #     --from-literal=admin-password=<STRONG_PASSWORD> -n <namespace>
 fuseki:
-  enabled: false
+  enabled: true
   replicaCount: 1
   image:
     repository: daschswiss/apache-jena-fuseki
