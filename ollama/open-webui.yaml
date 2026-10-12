@@ -52,15 +52,25 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/backend/data
+          # open-webui's first boot (DB migrations + downloading/loading the
+          # embedding model) regularly takes well over a minute. Without a
+          # startupProbe, the liveness probe below (ready by ~90s) kills the
+          # container before it ever binds the port - an endless
+          # CrashLoopBackOff (exit 137) that looks like it "won't start" but
+          # is really "never given enough time to". Give it up to 5 minutes;
+          # liveness/readiness only start counting after this first succeeds.
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             tcpSocket:
               port: http
-            initialDelaySeconds: 15
             periodSeconds: 10
           livenessProbe:
             tcpSocket:
               port: http
-            initialDelaySeconds: 30
             periodSeconds: 20
       volumes:
         - name: data
