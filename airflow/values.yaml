@@ -1772,7 +1772,10 @@ workers:
     extraInitContainers: []
 
     # Additional volumes attached to the pods created with pod-template-file
-    extraVolumes: []
+    extraVolumes:
+      - name: dbt-dags
+        configMap:
+          name: airflow-dbt-dags
     # Mount additional volumes into workers pods. It can be templated like in the following example:
     #  extraVolumes:
     #    - name: my-templated-extra-volume
@@ -1782,7 +1785,11 @@ workers:
     #         optional: true
 
     # Additional volume mounts attached to the pods created with pod-template-file
-    extraVolumeMounts: []
+    extraVolumeMounts:
+      - name: dbt-dags
+        mountPath: /opt/airflow/dags/dbt_datavault_dag.py
+        subPath: dbt_datavault_dag.py
+        readOnly: true
     # Mount additional volumes into workers pods. It can be templated like in the following example:
     #  extraVolumeMounts:
     #    - name: my-templated-extra-volume
