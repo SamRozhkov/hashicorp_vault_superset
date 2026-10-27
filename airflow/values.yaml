@@ -489,7 +489,9 @@ extraEnv: ~
 
 # Extra envFrom 'items' that will be added to the definition of Airflow containers
 # A string is expected (templated).
-extraEnvFrom: ~
+extraEnvFrom: |
+  - secretRef:
+      name: airflow-seaweedfs-conn
 # extraEnvFrom: |
 #   - secretRef:
 #       name: '{{ .Release.Name }}-airflow-connections'
@@ -4281,7 +4283,9 @@ config:
     executor: '{{ .Values.executor }}'
     auth_manager: "airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager"
   logging:
-    remote_logging: '{{- ternary "True" "False" (or .Values.elasticsearch.enabled .Values.opensearch.enabled) }}'
+    remote_logging: 'True'
+    remote_base_log_folder: 's3://airflow-logs'
+    remote_log_conn_id: 'seaweedfs_s3'
     colored_console_log: 'False'
   metrics:
     statsd_on: '{{ ternary "True" "False" (and .Values.statsd.enabled (not .Values.otelCollector.metricsEnabled)) }}'
