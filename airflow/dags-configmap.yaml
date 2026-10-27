@@ -1,0 +1,46 @@
+apiVersion: v1
+data:
+  dbt_datavault_dag.py: |
+    """Runs the dbt-datavault transformation (datavault4dbt on Postgres).
+
+    The dbt project (~/dbt-datavault on the host) is baked into the
+    ghcr.io/samrozhkov/dbt-datavault image at build time, including the
+    vendored dbt_packages, so the task pod needs no network access beyond
+    reaching the target database. It connects via profiles.yml's "k8s" target,
+    which points at host.docker.internal (Docker Desktop's DNS name for the
+    host machine) instead of localhost, since inside a pod "localhost" is the
+    pod's own network namespace.
+
+    Not scheduled by default (schedule=None) - trigger manually from the UI/CLI
+    until a cadence is decided.
+    """
+
+    from datetime import datetime
+
+    from airflow import DAG
+    from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+
+    with DAG(
+        dag_id="dbt_datavault_transform",
+        description="Build the Data Vault 2.0 model (seed -> stage -> hub/sat) via dbt",
+        schedule=None,
+        start_date=datetime(2026, 1, 1),
+        catchup=False,
+        tags=["dbt", "datavault"],
+    ) as dag:
+        dbt_build = KubernetesPodOperator(
+            task_id="dbt_build",
+            name="dbt-datavault-build",
+            namespace="airflow",
+            image="ghcr.io/samrozhkov/dbt-datavault:latest",
+            image_pull_policy="IfNotPresent",
+            cmds=["dbt"],
+            arguments=["build", "--target", "k8s", "--profiles-dir", "/dbt"],
+            get_logs=True,
+            is_delete_operator_pod=True,
+            in_cluster=True,
+        )
+kind: ConfigMap
+metadata:
+  name: airflow-dbt-dags
+  namespace: airflow
