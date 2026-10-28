@@ -8,5 +8,5 @@ spec:
   dnsNames:
     - openmetadata.rozhkov.pro
   issuerRef:
-    name: selfsigned
+    name: letsencrypt-prod
     kind: ClusterIssuer
